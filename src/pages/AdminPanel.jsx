@@ -1,38 +1,71 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect } from 'react';
 
 const AdminPanel = () => {
   const [clients, setClients] = useState([]);
-  const [form, setForm] = useState({ name: "", company: "" });
+  const [name, setName] = useState('');
+  const [company, setCompany] = useState('');
+  const [code, setCode] = useState('');
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("clients")) || [];
-    setClients(saved);
+    const storedClients = JSON.parse(localStorage.getItem('clients')) || [];
+    setClients(storedClients);
   }, []);
 
-  const handleAdd = () => {
-    const updated = [...clients, form];
-    localStorage.setItem("clients", JSON.stringify(updated));
-    setClients(updated);
-    setForm({ name: "", company: "" });
+  useEffect(() => {
+    localStorage.setItem('clients', JSON.stringify(clients));
+  }, [clients]);
+
+  const addClient = () => {
+    if (name && company && code) {
+      const newClient = { name, company, code };
+      setClients([...clients, newClient]);
+      setName('');
+      setCompany('');
+      setCode('');
+    }
   };
 
-  const handleDelete = (index) => {
-    const updated = clients.filter((_, i) => i !== index);
-    localStorage.setItem("clients", JSON.stringify(updated));
-    setClients(updated);
+  const removeClient = (index) => {
+    const updatedClients = [...clients];
+    updatedClients.splice(index, 1);
+    setClients(updatedClients);
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl mb-4">Admin Panel</h2>
-      <input className="border p-2 mb-2 mr-2" placeholder="Client Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-      <input className="border p-2 mb-2 mr-2" placeholder="Company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
-      <button onClick={handleAdd} className="bg-blue-600 text-white px-4 py-2 rounded">Add Client</button>
-      <ul className="mt-6 space-y-2">
-        {clients.map((c, i) => (
-          <li key={i} className="flex justify-between bg-gray-100 p-2 rounded">
-            <span>{c.name} - {c.company}</span>
-            <button onClick={() => handleDelete(i)} className="text-red-500">Remove</button>
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Admin Panel</h1>
+      <div className="flex gap-2 mb-4">
+        <input
+          className="border p-2 rounded"
+          type="text"
+          placeholder="Client Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          className="border p-2 rounded"
+          type="text"
+          placeholder="Company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
+        <input
+          className="border p-2 rounded"
+          type="text"
+          placeholder="Client Code"
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+        />
+        <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={addClient}>
+          Add Client
+        </button>
+      </div>
+      <ul>
+        {clients.map((client, index) => (
+          <li key={index} className="flex justify-between py-1 bg-gray-100 my-1 px-2">
+            <span>{client.name} - {client.company} ({client.code})</span>
+            <button className="text-red-500" onClick={() => removeClient(index)}>Remove</button>
           </li>
         ))}
       </ul>
