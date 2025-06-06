@@ -13,47 +13,32 @@ const Login = () => {
 
     if (password === 'ADMIN123') {
       navigate('/admin');
-      return;
-    }
-
-    const storedClients = JSON.parse(localStorage.getItem('clients') || '[]');
-    const matchedClient = storedClients.find((client) => client.code === password);
-
-    if (matchedClient) {
-      localStorage.setItem('currentClient', JSON.stringify(matchedClient));
-      navigate('/dashboard');
     } else {
-      setError('Invalid password');
+      const clients = JSON.parse(localStorage.getItem('clients') || '[]');
+      const clientMatch = clients.find((client) => client.code === password);
+      if (clientMatch) {
+        localStorage.setItem('activeClient', JSON.stringify(clientMatch));
+        navigate('/dashboard');
+      } else {
+        setError('Invalid password');
+      }
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: "url('/background.jpg')" }}
-    >
-      <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-md max-w-sm w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <input
-              type="password"
-              placeholder="Enter Password"
-              className="w-full p-2 border border-gray-300 rounded"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-          >
-            Login
-          </button>
-        </form>
-      </div>
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2 className="login-title">Customer Portal Login</h2>
+        <input
+          type="password"
+          placeholder="Enter Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="login-input"
+        />
+        <button type="submit" className="login-button">Login</button>
+        {error && <p className="login-error">{error}</p>}
+      </form>
     </div>
   );
 };
