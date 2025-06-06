@@ -10,17 +10,28 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === 'ABC123') {
-      navigate('/dashboard');
-    } else if (password === 'ALPHA123') {
+
+    if (password === 'ADMIN123') {
       navigate('/admin');
+      return;
+    }
+
+    const storedClients = JSON.parse(localStorage.getItem('clients') || '[]');
+    const matchedClient = storedClients.find((client) => client.code === password);
+
+    if (matchedClient) {
+      localStorage.setItem('currentClient', JSON.stringify(matchedClient));
+      navigate('/dashboard');
     } else {
       setError('Invalid password');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/background.jpg')" }}>
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('/background.jpg')" }}
+    >
       <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-md max-w-sm w-full">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <form onSubmit={handleSubmit}>
@@ -35,7 +46,10 @@ const Login = () => {
             />
           </div>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+          >
             Login
           </button>
         </form>
