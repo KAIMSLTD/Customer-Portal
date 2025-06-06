@@ -1,24 +1,23 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-function Login() {
-  const [passwordInput, setPasswordInput] = useState('');
+const Login = () => {
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (passwordInput === 'ADMIN123') {
-      localStorage.setItem('isAdmin', 'true');
+    if (password === 'ADMIN123') {
       navigate('/admin');
     } else {
-      const clients = JSON.parse(localStorage.getItem('clients')) || [];
-      const client = clients.find((c) => c.password === passwordInput);
-
-      if (client) {
-        localStorage.setItem('clientCode', client.code);
+      const clients = JSON.parse(localStorage.getItem('clients') || '[]');
+      const clientMatch = clients.find((client) => client.code === password);
+      if (clientMatch) {
+        localStorage.setItem('activeClient', JSON.stringify(clientMatch));
         navigate('/dashboard');
       } else {
         setError('Invalid password');
@@ -28,20 +27,20 @@ function Login() {
 
   return (
     <div className="login-container">
-      <form onSubmit={handleLogin}>
-        <h2>Client Login</h2>
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2 className="login-title">Customer Portal Login</h2>
         <input
           type="password"
-          placeholder="Enter your code"
-          value={passwordInput}
-          onChange={(e) => setPasswordInput(e.target.value)}
-          required
+          placeholder="Enter Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="login-input"
         />
-        <button type="submit">Login</button>
-        {error && <p className="error">{error}</p>}
+        <button type="submit" className="login-button">Login</button>
+        {error && <p className="login-error">{error}</p>}
       </form>
     </div>
   );
-}
+};
 
 export default Login;
