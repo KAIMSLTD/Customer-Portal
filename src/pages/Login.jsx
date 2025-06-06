@@ -1,23 +1,24 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-const Login = () => {
-  const [password, setPassword] = useState('');
+function Login() {
+  const [passwordInput, setPasswordInput] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    if (password === 'ADMIN123') {
+    if (passwordInput === 'ADMIN123') {
+      localStorage.setItem('isAdmin', 'true');
       navigate('/admin');
     } else {
-      const clients = JSON.parse(localStorage.getItem('clients') || '[]');
-      const clientMatch = clients.find((client) => client.code === password);
-      if (clientMatch) {
-        localStorage.setItem('activeClient', JSON.stringify(clientMatch));
+      const clients = JSON.parse(localStorage.getItem('clients')) || [];
+      const client = clients.find((c) => c.password === passwordInput);
+
+      if (client) {
+        localStorage.setItem('clientCode', client.code);
         navigate('/dashboard');
       } else {
         setError('Invalid password');
@@ -27,20 +28,20 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <form onSubmit={handleSubmit} className="login-form">
-        <h2 className="login-title">Customer Portal Login</h2>
+      <form onSubmit={handleLogin}>
+        <h2>Client Login</h2>
         <input
           type="password"
-          placeholder="Enter Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="login-input"
+          placeholder="Enter your code"
+          value={passwordInput}
+          onChange={(e) => setPasswordInput(e.target.value)}
+          required
         />
-        <button type="submit" className="login-button">Login</button>
-        {error && <p className="login-error">{error}</p>}
+        <button type="submit">Login</button>
+        {error && <p className="error">{error}</p>}
       </form>
     </div>
   );
-};
+}
 
 export default Login;
